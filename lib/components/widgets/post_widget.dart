@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../entities/post.dart';
 import '../../extensions/build_context_extensions.dart';
 import '../../extensions/duration_extensions.dart';
+import '../../logic/routes/fchan_route.dart';
 import 'cached_network_image_with_loader.dart';
 import 'content_html_text_widget.dart';
 
@@ -65,10 +66,19 @@ class PostWidget extends StatelessWidget {
             if (_post.thumbnail != null)
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: CachedNetworkImageWithLoader(
-                  _post.thumbnail.link,
-                  _post.thumbnail.width.toDouble(),
-                  _post.thumbnail.height.toDouble(),
+                child: InkWell(
+                  child: CachedNetworkImageWithLoader(
+                    _post.thumbnail.link,
+                    _post.thumbnail.width.toDouble(),
+                    _post.thumbnail.height.toDouble(),
+                  ),
+                  onTap: () => context.push(
+                    FChanRoute.imageViewScreen,
+                    arguments: {
+                      'title': _post.no.toString(),
+                      'uri': _post.image.link,
+                    },
+                  ),
                 ),
               ),
             if (_post.sub != null)

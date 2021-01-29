@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import 'components/themes/fchan_themes.dart';
+import 'components/widgets/centered_circular_progress_indicator_widget.dart';
 import 'components/words/fchan_words.dart';
 import 'extensions/build_context_extensions.dart';
 import 'logic/api/fchan_api.dart';
@@ -14,6 +15,7 @@ import 'logic/screens/board_screen.dart';
 import 'logic/screens/explore_boards_screen.dart';
 import 'logic/screens/favorite_boards_screen.dart';
 import 'logic/screens/history_screen.dart';
+import 'logic/screens/image_view_screen.dart';
 import 'logic/screens/settings_screen.dart';
 import 'logic/screens/thread_screen.dart';
 import 'provider/catalog_model.dart';
@@ -82,6 +84,14 @@ class FChanAppState extends State<FChanApp> {
                   settings.arguments,
                 ),
               );
+            case FChanRoute.imageViewScreen:
+              final Map<String, String> arguments = settings.arguments;
+              return MaterialPageRoute(
+                builder: (context) => ImageViewScreen(
+                  arguments['title'],
+                  arguments['uri'],
+                ),
+              );
             default:
               return null;
           }
@@ -110,49 +120,64 @@ class FChan extends StatefulWidget {
 
 class _FChanState extends State<FChan> {
   int _currentIndex = 0;
+  final _screens = <NavigationPage>[];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _screens.addAll(
+        [
+          NavigationPage(
+            FavoriteBoardsScreen(),
+            context.fChanWords().boardsTitle,
+            BottomNavigationBarItem(
+              label: context.fChanWords().homeTitle,
+              icon: Icon(Icons.home),
+            ),
+            [
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => context.push(FChanRoute.exploreBoardsScreen),
+              ),
+            ],
+          ),
+          NavigationPage(
+            HistoryScreen(),
+            context.fChanWords().historyTitle,
+            BottomNavigationBarItem(
+              label: context.fChanWords().historyTitle,
+              icon: Icon(Icons.history),
+            ),
+            [
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () async => await Provider.of<HistoryModel>(context, listen: false).clearHistory(),
+              ),
+            ],
+          ),
+          NavigationPage(
+            SettingsScreen(),
+            context.fChanWords().settingsTitle,
+            BottomNavigationBarItem(
+              label: context.fChanWords().settingsTitle,
+              icon: Icon(Icons.settings),
+            ),
+            [],
+          ),
+        ],
+      );
+      setState(() {
+
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: refactor this
-    final _screens = [
-      NavigationPage(
-        FavoriteBoardsScreen(),
-        context.fChanWords().boardsTitle,
-        BottomNavigationBarItem(
-          label: context.fChanWords().homeTitle,
-          icon: Icon(Icons.home),
-        ),
-        [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () => context.push(FChanRoute.exploreBoardsScreen),
-          ),
-        ],
-      ),
-      NavigationPage(
-        HistoryScreen(),
-        context.fChanWords().historyTitle,
-        BottomNavigationBarItem(
-          label: context.fChanWords().historyTitle,
-          icon: Icon(Icons.history),
-        ),
-        [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () async => await Provider.of<HistoryModel>(context, listen: false).clearHistory(),
-          ),
-        ],
-      ),
-      NavigationPage(
-        SettingsScreen(),
-        context.fChanWords().settingsTitle,
-        BottomNavigationBarItem(
-          label: context.fChanWords().settingsTitle,
-          icon: Icon(Icons.settings),
-        ),
-        [],
-      ),
-    ];
+    if (_screens.isEmpty) {
+      return CenteredCircularProgressIndicatorWidget();
+    }
     final currentPage = _screens[_currentIndex];
     return Scaffold(
       appBar: AppBar(
@@ -165,7 +190,6 @@ class _FChanState extends State<FChan> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
-        // TODO: performance?
         items: _screens.map((screen) => screen.bottomNavigationBarItem).toList(),
         onTap: (selectedIndex) => setState(() => _currentIndex = selectedIndex),
       ),

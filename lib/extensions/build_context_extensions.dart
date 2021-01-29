@@ -21,4 +21,6 @@ extension BuildContextExtensions on BuildContext {
       arguments: arguments,
     );
   }
+
+  void pop() => Navigator.pop(this);
 }

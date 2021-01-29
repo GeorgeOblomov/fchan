@@ -24,6 +24,7 @@ class BoardScreen extends StatefulWidget {
 }
 
 class _BoardState extends State<BoardScreen> {
+  BoardView _boardView = BoardView.grid;
   ListPortionController _listPortionController;
 
   final ScrollController _scrollController = ScrollController();
@@ -56,6 +57,19 @@ class _BoardState extends State<BoardScreen> {
         title: Text(
           widget._board.toString(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(_boardView == BoardView.grid ? Icons.view_list : Icons.list),
+            onPressed: () {
+              if (_boardView == BoardView.grid) {
+                _boardView = BoardView.list;
+              } else {
+                _boardView = BoardView.grid;
+              }
+              setState(() {});
+            },
+          ),
+        ],
       ),
       body: _catalogPresentation(),
       floatingActionButton: Visibility(
@@ -82,9 +96,31 @@ class _BoardState extends State<BoardScreen> {
         context.fChanWords().catalogIsEmpty,
       );
     }
-    return StaggeredGridView.countBuilder(
-      crossAxisCount: 4,
-      staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+    if (_boardView == BoardView.grid) {
+      return StaggeredGridView.countBuilder(
+        crossAxisCount: 4,
+        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          if (item == listLoader) {
+            // TODO: set at center
+            return CenteredCircularProgressIndicatorWidget();
+          }
+          final thread = item.item;
+          return ThreadWidget(
+            thread,
+            () async => Provider.of<HistoryModel>(context, listen: false).addToHistory(thread),
+            [
+              ThreadPopupMenuAction.openLink,
+              ThreadPopupMenuAction.copyLink,
+            ],
+          );
+        },
+        itemCount: items.length,
+        controller: _scrollController,
+      );
+    }
+    return ListView.builder(
       itemBuilder: (context, index) {
         final item = items[index];
         if (item == listLoader) {
@@ -105,4 +141,9 @@ class _BoardState extends State<BoardScreen> {
       controller: _scrollController,
     );
   }
+}
+
+enum BoardView {
+  list,
+  grid,
 }

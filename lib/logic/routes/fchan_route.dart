@@ -4,4 +4,5 @@ class FChanRoute {
   static const exploreBoardsScreen = '/explore_boards_screen';
   static const boardScreen = '/board_screen';
   static const threadScreen = '/thread_screen';
+  static const imageViewScreen = '/image_view_screen';
 }
