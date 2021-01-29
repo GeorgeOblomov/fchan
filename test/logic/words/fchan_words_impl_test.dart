@@ -100,8 +100,8 @@ void main() {
           'Storage',
         );
         expect(
-          fChanWords.settingsItemClearImageCache,
-          'Clear Image Cache',
+          fChanWords.settingsItemClearCache,
+          'Clear Cache',
         );
         expect(
           fChanWords.settingsCategoryInfo,

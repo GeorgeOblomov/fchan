@@ -27,8 +27,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               fChanWords.settingsCategoryStorage,
             ),
             _settingsClickableItem(
-              fChanWords.settingsItemClearImageCache,
-              Icon(Icons.image_not_supported_outlined),
+              fChanWords.settingsItemClearCache,
+              Icon(Icons.cached),
               () => ImageCacheManager().emptyCache(),
             ),
             _settingsSection(

@@ -29,7 +29,7 @@ abstract class FChanWords {
 
   String get settingsCategoryStorage;
 
-  String get settingsItemClearImageCache;
+  String get settingsItemClearCache;
 
   String get settingsCategoryInfo;
 
@@ -95,7 +95,7 @@ class FChanWordsImpl extends FChanWords {
   String get settingsCategoryStorage => 'Storage';
 
   @override
-  String get settingsItemClearImageCache => 'Clear Image Cache';
+  String get settingsItemClearCache => 'Clear Cache';
 
   @override
   String get settingsCategoryInfo => 'Info';
